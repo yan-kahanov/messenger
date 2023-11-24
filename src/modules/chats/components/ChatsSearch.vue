@@ -1,0 +1,10 @@
+<template>
+  <v-text-field
+    placeholder="Поиск"
+    variant="solo-filled"
+    rounded
+    density="compact"
+    flat
+    hide-details
+  ></v-text-field>
+</template>

@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import ChatsItem from './components/ChatsItem.vue'
-import { computed } from 'vue'
+import ChatsSearch from './components/ChatsSearch.vue'
+import ChatsMenu from './components/ChatsMenu.vue'
+import { computed, ref } from 'vue'
 
 const route = useRoute()
 const activeChatId = computed(() => route.query.chat)
+const isMenuOpened = ref<boolean>(false)
 
 const chats = [
   {
@@ -23,7 +26,21 @@ const chats = [
 </script>
 
 <template>
-  <v-list class="chats" :class="{ openedChat: !!activeChatId }">
+  <chats-menu v-model="isMenuOpened" />
+  <v-list class="chats pt-0" :class="{ openedChat: !!activeChatId }" border>
+    <div class="d-flex align-center pa-2">
+      <v-btn
+        class="me-1"
+        icon
+        variant="text"
+        size="small"
+        color="disabled"
+        @click="isMenuOpened = !isMenuOpened"
+      >
+        <v-icon icon="mdi-menu" size="26" />
+      </v-btn>
+      <chats-search />
+    </div>
     <chats-item v-for="(chat, index) in chats" :key="index" :chat="chat" />
   </v-list>
 </template>

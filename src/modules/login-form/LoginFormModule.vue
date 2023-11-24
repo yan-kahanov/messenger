@@ -95,6 +95,7 @@ onMounted(() => {
         v-model="form.isRememberMe"
         hide-details
         density="compact"
+        color="primary"
         label="Запомнить меня"
       ></v-checkbox>
       <v-btn color="primary" block type="submit" :loading="isLoading">Войти</v-btn>
