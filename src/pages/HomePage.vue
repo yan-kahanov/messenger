@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ChatsModule } from '@/modules/chats'
 import { signOut } from 'firebase/auth'
 import { inject } from 'vue'
 
@@ -6,9 +7,14 @@ const fbAuth = inject<any>('fbAuth')
 </script>
 
 <template>
-  <div>
-    <v-card class="ma-4 pa-6" color="primary">
-      <v-btn @click="() => signOut(fbAuth)">выйти</v-btn>
-    </v-card>
+  <div class="h-100">
+    <chats-module />
+    <v-btn
+      @click="() => signOut(fbAuth)"
+      color="primary"
+      :style="{ position: 'fixed', bottom: '20px', right: '20px' }"
+    >
+      выйти
+    </v-btn>
   </div>
 </template>

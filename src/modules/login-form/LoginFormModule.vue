@@ -2,8 +2,7 @@
 import { ref, reactive, inject } from 'vue'
 import { emailValidator, requiredValidator, minLengthValidator } from '@/helpers/validators'
 import VPasswordField from '@/components/VPasswordField.vue'
-import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
-import { useRouter } from 'vue-router'
+import { signInWithEmailAndPassword } from 'firebase/auth'
 import { onMounted } from 'vue'
 
 interface Form {
