@@ -1,24 +1,23 @@
 <script setup lang="ts">
 import { useTheme } from 'vuetify'
-import { onMounted, provide } from 'vue'
+import { onMounted, provide, ref } from 'vue'
 import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { useRoute, useRouter } from 'vue-router'
 
 const theme = useTheme()
-
+const router = useRouter()
+const route = useRoute()
+const isLoading = ref(true)
 const fbApp = initializeApp({
-  apiKey: 'AIzaSyCs61mZ4aIrZ4uGWuNW_hi-NeKR0S4i4Fc',
-  authDomain: 'chat-cc2f1.firebaseapp.com',
-  projectId: 'chat-cc2f1',
-  storageBucket: 'chat-cc2f1.appspot.com',
-  messagingSenderId: '677562325179',
-  appId: '1:677562325179:web:01bb7cb0a61b1e9d3d719e'
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_AROJECT_ID,
+  storageBucket: import.meta.env.VITE_ATORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_AESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID
 })
 const fbAuth = getAuth(fbApp)
-
-onMounted(() => {
-  setTheme()
-})
 
 const setTheme = () => {
   const isSystemThemeDark =
@@ -28,6 +27,23 @@ const setTheme = () => {
   theme.global.name.value = lastTheme || systemTheme
 }
 
+onMounted(() => {
+  setTheme()
+})
+
+onAuthStateChanged(fbAuth, async (user) => {
+  await router.isReady()
+  const isAuthPage = route.name === 'login' || route.name === 'registration'
+
+  if (user && isAuthPage) {
+    router.replace('/')
+  } else if(!user && !isAuthPage) {
+    router.replace('/login')
+  }
+
+  isLoading.value = false
+})
+
 provide('fbApp', fbApp)
 provide('fbAuth', fbAuth)
 </script>
@@ -35,7 +51,10 @@ provide('fbAuth', fbAuth)
 <template>
   <v-app>
     <v-main>
-      <router-view />
+      <div v-if="isLoading" class="d-flex justify-center align-center h-100">
+        <v-progress-circular color="primary" indeterminate size="40" />
+      </div>
+      <router-view v-else />
     </v-main>
   </v-app>
 </template>

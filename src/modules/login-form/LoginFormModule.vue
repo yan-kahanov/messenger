@@ -21,22 +21,19 @@ const formEl = ref<null | any>(null)
 const fbAuth = inject<any>('fbAuth')
 const isLoading = ref<boolean>(false)
 const isWrongData = ref<boolean>(false)
-const router = useRouter()
 
 const submit = async () => {
   if (!formEl.value) return
 
   const { valid } = await formEl.value.validate()
-  isWrongData.value = false
 
-  if (valid) {
+  if (valid && !isWrongData.value) {
     const { email, password } = form
 
     isLoading.value = true
 
     signInWithEmailAndPassword(fbAuth, email, password)
       .then(() => {
-        router.push('/')
         saveOrRemoveUser()
         formEl.value.reset()
       })
@@ -81,6 +78,7 @@ onMounted(() => {
         label="Email"
         :rules="[emailValidator, requiredValidator]"
         :error-messages="isWrongData ? ['Неверный email или пароль'] : []"
+        @update:model-value="() => isWrongData = false"
       >
       </v-text-field>
       <v-password-field
@@ -90,6 +88,7 @@ onMounted(() => {
         label="Пароль"
         :rules="[requiredValidator, (e: string) => minLengthValidator(e, 6)]"
         :error-messages="isWrongData ? ['Неверный email или пароль'] : []"
+        @update:model-value="() => isWrongData = false"
       >
       </v-password-field>
       <v-checkbox
