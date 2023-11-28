@@ -37,7 +37,7 @@ onAuthStateChanged(fbAuth, async (user) => {
 
   if (user && isAuthPage) {
     router.replace('/')
-  } else if(!user && !isAuthPage) {
+  } else if (!user && !isAuthPage) {
     router.replace('/login')
   }
 
@@ -58,3 +58,16 @@ provide('fbAuth', fbAuth)
     </v-main>
   </v-app>
 </template>
+
+<style lang="scss">
+html{
+  overflow: hidden !important;
+}
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: rgba(var(--v-border-color), 0.3);
+}
+</style>

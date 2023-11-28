@@ -28,7 +28,7 @@ const chats = [
 <template>
   <chats-menu v-model="isMenuOpened" />
   <v-list class="chats pt-0" :class="{ openedChat: !!activeChatId }" border>
-    <div class="d-flex align-center pa-2">
+    <div class="d-flex align-center px-2 py-3">
       <v-btn
         class="me-1"
         icon
@@ -48,14 +48,15 @@ const chats = [
 <style scoped lang="scss">
 .chats {
   transition: all 0.3s;
-  max-width: 420px;
+  width: 420px;
   height: 100%;
+  flex-shrink: 0;
   @media screen and (max-width: 700px) {
-    max-width: 100%;
+    width: 100%;
   }
   &.openedChat {
     @media screen and (max-width: 900px) {
-      max-width: 0;
+      width: 0;
     }
   }
 }

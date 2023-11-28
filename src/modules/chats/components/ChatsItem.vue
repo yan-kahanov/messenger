@@ -1,12 +1,24 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
 interface Props {
   chat: { id: number; name: string; lastMsg: string }
 }
 defineProps<Props>()
+
+const route = useRoute()
+const activeChatId = computed(() => +(route.query.chat || -1))
 </script>
 
 <template>
-  <v-list-item link class="px-2" @click="() => $router.push(`/?chat=${chat.id}`)">
+  <v-list-item
+    :active="chat.id === activeChatId"
+    active-color="primary"
+    link
+    class="px-2"
+    @click="() => $router.push(`/?chat=${chat.id}`)"
+  >
     <div class="d-flex gap-2">
       <v-avatar size="50">
         <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" cover></v-img>
