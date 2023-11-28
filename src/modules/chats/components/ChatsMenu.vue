@@ -1,26 +1,30 @@
 <script setup lang="ts">
+import { useUserStore } from '@/stores/user'
 import { signOut } from 'firebase/auth'
 import { inject } from 'vue'
+import { storeToRefs } from 'pinia'
+
 const fbAuth = inject<any>('fbAuth')
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 </script>
 
 <template>
   <v-navigation-drawer temporary>
     <v-list-item>
       <div class="d-flex align-center py-4">
-        <v-avatar size="50">
-          <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" cover></v-img>
+        <v-avatar size="50" color="surface-variant">
+          <v-img v-if="user?.photoURL" :src="user?.photoURL" cover></v-img>
+          <div v-else class="text-h5">{{ user?.displayName?.slice(0, 1) }}</div>
         </v-avatar>
         <div class="ms-2">
-          <div>Test</div>
-          <div>test@test.com</div>
+          <div>{{ user?.displayName }}</div>
+          <div>{{ user?.email }}</div>
         </div>
       </div>
     </v-list-item>
     <v-divider />
-    <v-btn class="sign-out-btn" variant="tonal-filled" @click="() => signOut(fbAuth)">
-      Выйти
-    </v-btn>
+    <v-btn class="sign-out-btn" @click="() => signOut(fbAuth)"> Выйти </v-btn>
   </v-navigation-drawer>
 </template>
 

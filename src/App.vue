@@ -2,8 +2,10 @@
 import { useTheme } from 'vuetify'
 import { onMounted, provide, ref } from 'vue'
 import { initializeApp } from 'firebase/app'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { getAuth, onAuthStateChanged, type User } from 'firebase/auth'
 import { useRoute, useRouter } from 'vue-router'
+import { getFirestore } from 'firebase/firestore'
+import { useUserStore } from '@/stores/user'
 
 const theme = useTheme()
 const router = useRouter()
@@ -18,6 +20,8 @@ const fbApp = initializeApp({
   appId: import.meta.env.VITE_APP_ID
 })
 const fbAuth = getAuth(fbApp)
+const fbDB = getFirestore()
+const userStore = useUserStore()
 
 const setTheme = () => {
   const isSystemThemeDark =
@@ -31,9 +35,10 @@ onMounted(() => {
   setTheme()
 })
 
-onAuthStateChanged(fbAuth, async (user) => {
+onAuthStateChanged(fbAuth, async (user: User | null) => {
   await router.isReady()
   const isAuthPage = route.name === 'login' || route.name === 'registration'
+  userStore.setUser(user)
 
   if (user && isAuthPage) {
     router.replace('/')
@@ -46,6 +51,7 @@ onAuthStateChanged(fbAuth, async (user) => {
 
 provide('fbApp', fbApp)
 provide('fbAuth', fbAuth)
+provide('fbDB', fbDB)
 </script>
 
 <template>
@@ -60,7 +66,7 @@ provide('fbAuth', fbAuth)
 </template>
 
 <style lang="scss">
-html{
+html {
   overflow: hidden !important;
 }
 ::-webkit-scrollbar {

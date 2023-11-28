@@ -7,14 +7,17 @@ import {
   confirmedValidator
 } from '@/helpers/validators'
 import VPasswordField from '@/components/VPasswordField.vue'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { doc, setDoc } from "firebase/firestore";
 
 interface Form {
+  name: string
   email: string
   password: string
   repeatPassword: string
 }
 const form: Form = reactive({
+  name: '',
   email: '',
   password: '',
   repeatPassword: ''
@@ -22,6 +25,7 @@ const form: Form = reactive({
 
 const formEl = ref<null | any>(null)
 const fbAuth = inject<any>('fbAuth')
+const fbDB = inject<any>('fbDB')
 const isLoading = ref(false)
 const isEmailInUse = ref(false)
 
@@ -31,12 +35,25 @@ const submit = async () => {
   const { valid } = await formEl.value.validate()
 
   if (valid && !isEmailInUse.value) {
-    const { email, password } = form
+    const { email, password, name } = form
 
     isLoading.value = true
     createUserWithEmailAndPassword(fbAuth, email, password)
-      .then(() => {
+      .then(async (res) => {
         formEl.value.reset()
+        // update profile
+        await updateProfile(res.user, {
+          displayName: name
+        })
+        // create user on firestore
+        await setDoc(doc(fbDB, 'users', res.user.uid), {
+          uid: res.user.uid,
+          displayName: name,
+          email,
+          photoURL: null
+        })
+        //create empty user chats on firestore
+        await setDoc(doc(fbDB, "userChats", res.user.uid), {});
       })
       .catch((error) => {
         if (error.code === 'auth/email-already-in-use') {
@@ -53,12 +70,21 @@ const submit = async () => {
     <v-form class="pa-6" @submit.prevent="submit" ref="formEl" :disabled="isLoading">
       <p class="text-h4 text-center mb-4">Регистрация</p>
       <v-text-field
+        v-model="form.name"
+        variant="outlined"
+        label="Имя"
+        :rules="[requiredValidator]"
+        :error-messages="isEmailInUse ? ['Email уже используется'] : []"
+        @update:model-value="() => (isEmailInUse = false)"
+      />
+      <v-text-field
         v-model="form.email"
+        class="mt-2"
         variant="outlined"
         label="Email"
         :rules="[emailValidator, requiredValidator]"
         :error-messages="isEmailInUse ? ['Email уже используется'] : []"
-        @update:model-value="() => isEmailInUse = false"
+        @update:model-value="() => (isEmailInUse = false)"
       >
       </v-text-field>
       <v-password-field
