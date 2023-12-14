@@ -3,26 +3,35 @@ import { useRoute } from 'vue-router'
 import ChatsItem from './components/ChatsItem.vue'
 import ChatsSearch from './components/ChatsSearch.vue'
 import ChatsMenu from './components/ChatsMenu.vue'
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, inject } from 'vue'
+import { useUserStore } from '@/stores/user'
+import { storeToRefs } from 'pinia'
+import { doc, onSnapshot } from 'firebase/firestore'
 
 const route = useRoute()
 const activeChatId = computed(() => route.query.chat)
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+const fbDB = inject<any>('fbDB')
 const isMenuOpened = ref<boolean>(false)
+const search = ref('')
+const isSearching = ref(true)
+const chats = ref([])
+const users = ref([])
 
-const chats = [
-  {
-    id: 1,
-    name: 'Вася',
-    lastMsg:
-      'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eum ab molestiae itaque et laudantium. Porro sed maiores laboriosam aliquid placeat repellat explicabo assumenda iusto! Quam quas error delectus enim sapiente.'
-  },
-  {
-    id: 2,
-    name: 'Коля',
-    lastMsg: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate, ipsam.'
-  },
-  { id: 3, name: 'Петя', lastMsg: 'Lorem ipsum dolor sit amet.' }
-]
+onMounted(() => {
+  onSnapshot(doc(fbDB, 'userChats', user.value?.uid), (doc) => {
+    const newChats = []
+    const res = doc.data()
+
+    for (let key in res) {
+      newChats.push({ uid: key, ...res[key] })
+    }
+
+    chats.value = newChats
+    isSearching.value = false
+  })
+})
 </script>
 
 <template>
@@ -39,9 +48,27 @@ const chats = [
       >
         <v-icon icon="mdi-menu" size="26" />
       </v-btn>
-      <chats-search />
+      <chats-search
+        v-model:users="users"
+        v-model:search="search"
+        v-model:is-searching="isSearching"
+      />
     </div>
-    <chats-item v-for="(chat, index) in chats" :key="index" :chat="chat" />
+    <div v-if="isSearching" class="d-flex justify-center pa-5">
+      <v-progress-circular indeterminate />
+    </div>
+    <div
+      v-else-if="(!chats.length && !search.length) || (!users.length && search.length)"
+      class="text-center pt-5"
+    >
+      Список пуст
+    </div>
+    <div v-else-if="search?.length">
+      <chats-item v-for="(user, index) in users" :key="index" :user="user" />
+    </div>
+    <div v-else>
+      <chats-item v-for="(chat, index) in chats" :key="index" :chat="chat" />
+    </div>
   </v-list>
 </template>
 

@@ -1,4 +1,4 @@
-import type { User } from '@firebase/auth'
+import type { User } from '@/types/user'
 import { defineStore } from 'pinia'
 
 export const useUserStore = defineStore('user', {
@@ -6,7 +6,7 @@ export const useUserStore = defineStore('user', {
     user: {} as User | null
   }),
   actions: {
-    setUser(user: User | null){
+    setUser(user: User | null) {
       this.user = user
     }
   }

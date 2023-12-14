@@ -2,7 +2,8 @@
 import { useTheme } from 'vuetify'
 import { onMounted, provide, ref } from 'vue'
 import { initializeApp } from 'firebase/app'
-import { getAuth, onAuthStateChanged, type User } from 'firebase/auth'
+import { getAuth, onAuthStateChanged, type User as fbUser } from 'firebase/auth'
+import type { User } from '@/types/user'
 import { useRoute, useRouter } from 'vue-router'
 import { getFirestore } from 'firebase/firestore'
 import { useUserStore } from '@/stores/user'
@@ -35,10 +36,10 @@ onMounted(() => {
   setTheme()
 })
 
-onAuthStateChanged(fbAuth, async (user: User | null) => {
+onAuthStateChanged(fbAuth, async (user: fbUser | null) => {
   await router.isReady()
   const isAuthPage = route.name === 'login' || route.name === 'registration'
-  userStore.setUser(user)
+  userStore.setUser(user as User)
 
   if (user && isAuthPage) {
     router.replace('/')
