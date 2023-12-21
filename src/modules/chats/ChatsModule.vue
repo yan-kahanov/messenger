@@ -6,31 +6,35 @@ import ChatsMenu from './components/ChatsMenu.vue'
 import { computed, ref, onMounted, inject } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
-import { doc, onSnapshot } from 'firebase/firestore'
+import { doc, onSnapshot, type Firestore } from 'firebase/firestore'
+import type { Chat } from '@/types/chat'
 
 const route = useRoute()
 const activeChatId = computed(() => route.query.chat)
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const fbDB = inject<any>('fbDB')
+const fbDB = inject<Firestore>('fbDB')
 const isMenuOpened = ref<boolean>(false)
 const search = ref('')
 const isSearching = ref(true)
-const chats = ref([])
+const chats = ref<Chat[]>([])
 const users = ref([])
 
 onMounted(() => {
-  onSnapshot(doc(fbDB, 'userChats', user.value?.uid), (doc) => {
-    const newChats = []
-    const res = doc.data()
+  if (fbDB && user.value?.uid) {
+    onSnapshot(doc(fbDB, 'userChats', user.value?.uid as string), (doc) => {
+      const newChats: Chat[] = []
+      const res = doc.data()
 
-    for (let key in res) {
-      newChats.push({ uid: key, ...res[key] })
-    }
+      for (let key in res) {
+        newChats.push({ uid: key, ...res[key] })
+      }
+      newChats.sort((a, b) => b.date?.seconds - a.date?.seconds)
 
-    chats.value = newChats
-    isSearching.value = false
-  })
+      chats.value = newChats
+      isSearching.value = false
+    })
+  }
 })
 </script>
 
@@ -58,16 +62,16 @@ onMounted(() => {
       <v-progress-circular indeterminate />
     </div>
     <div
-      v-else-if="(!chats.length && !search.length) || (!users.length && search.length)"
+      v-else-if="(!chats.length && !search?.length) || (!users.length && search?.length)"
       class="text-center pt-5"
     >
       Список пуст
     </div>
     <div v-else-if="search?.length">
-      <chats-item v-for="(user, index) in users" :key="index" :user="user" />
+      <chats-item v-for="(user, index) in users" :key="index" :user="user" v-model:search="search"/>
     </div>
     <div v-else>
-      <chats-item v-for="(chat, index) in chats" :key="index" :chat="chat" />
+      <chats-item v-for="(chat, index) in chats" :key="index" :chat="chat" v-model:search="search"/>
     </div>
   </v-list>
 </template>

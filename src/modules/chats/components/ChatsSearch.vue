@@ -50,6 +50,7 @@ const handleSearch = debounce(async (searchQuery: string) => {
 
 <template>
   <v-text-field
+    :model-value="search"
     @update:model-value="handleSearch"
     placeholder="Поиск"
     variant="solo-filled"

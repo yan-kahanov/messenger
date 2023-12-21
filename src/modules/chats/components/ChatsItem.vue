@@ -1,38 +1,44 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
-import { computed, inject } from 'vue'
-import { useRoute } from 'vue-router'
-import { setDoc, doc, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore'
-import router from '@/router'
+import { computed, inject, watch, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { setDoc, doc, updateDoc, serverTimestamp, getDoc, type Firestore } from 'firebase/firestore'
 import type { User } from '@/types/user'
 import type { Chat } from '@/types/chat'
+import { useChatsStore } from '@/stores/chats'
 
 interface Props {
   user?: User
   chat?: Chat
+  search?: string
 }
 const props = defineProps<Props>()
+const emit = defineEmits(['update:search'])
 
 const route = useRoute()
+const router = useRouter()
 const activeChatUid = computed(() => route.query.chat)
 const userStore = useUserStore()
+const chatsStore = useChatsStore()
 const { user: currentUser } = storeToRefs(userStore)
-const fbDB = inject<any>('fbDB')
-const item = computed(() => props.user || props.chat.userInfo)
+const fbDB = inject<Firestore>('fbDB')
+const item = computed(() => props.user || props.chat?.userInfo)
+const isLoading = ref<boolean>(false)
 
 const clickUser = async () => {
-  if(!props.user) return
+  if (!props.user || !fbDB || isLoading.value) return
   //check whether the group(chats in firestore) exists, if not create
   const combinedId = currentUser.value?.uid + props.user.uid
   const res = await getDoc(doc(fbDB, 'chats', combinedId))
 
   if (!res.exists()) {
+    isLoading.value = true
     //create a chat in chats collection
     await setDoc(doc(fbDB, 'chats', combinedId), { messages: [] })
 
     //create user chats
-    await updateDoc(doc(fbDB, 'userChats', currentUser.value?.uid), {
+    await updateDoc(doc(fbDB, 'userChats', currentUser.value?.uid as string), {
       [combinedId + '.userInfo']: {
         uid: props.user.uid,
         displayName: props.user.displayName,
@@ -49,21 +55,38 @@ const clickUser = async () => {
       },
       [combinedId + '.date']: serverTimestamp()
     })
+
+    isLoading.value = false
   }
+
+  router.push(`/?chat=${combinedId}`)
+  emit('update:search', '')
 }
 
 const clickChat = () => {
-  router.push(`/?chat=${item.value.uid}`)
+  if (!props.chat) return
+
+  router.push(`/?chat=${props.chat.uid}`)
 }
 
 const handleClick = () => {
   props.user ? clickUser() : clickChat()
 }
+
+watch(
+  activeChatUid,
+  () => {
+    if (props.chat?.uid === activeChatUid.value) {
+      chatsStore.setActiveChat(props.chat)
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
   <v-list-item
-    :active="item?.uid === activeChatUid"
+    :active="!!chat?.uid && chat?.uid === activeChatUid"
     active-color="primary"
     link
     class="chats__item px-2"
@@ -71,15 +94,17 @@ const handleClick = () => {
   >
     <div class="d-flex gap-2">
       <v-avatar size="50" color="surface-variant">
-        <v-img v-if="item.photoURL" :src="item.photoURL" cover></v-img>
+        <v-progress-circular v-if="isLoading" indeterminate size="small" width="2"/>
+        <v-img v-else-if="item?.photoURL" :src="item.photoURL" cover></v-img>
         <div v-else class="text-h5">{{ item?.displayName?.slice(0, 1) }}</div>
       </v-avatar>
       <div class="ms-2 d-flex flex-column justify-center">
         <div>{{ item?.displayName }}</div>
         <div v-if="user" class="text-disabled">{{ user.email }}</div>
-        <div v-else class="chats__item-msg text-disabled">
-          Нет сообщений
+        <div v-else-if="chat?.lastMessage" class="chats__item-msg text-disabled">
+          {{ chat.lastMessage.text }}
         </div>
+        <div v-else class="text-disabled">Нет сообщений</div>
       </div>
     </div>
   </v-list-item>
