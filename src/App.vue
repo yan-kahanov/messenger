@@ -3,6 +3,7 @@ import { useTheme } from 'vuetify'
 import { onMounted, provide, ref } from 'vue'
 import { initializeApp } from 'firebase/app'
 import { getAuth, onAuthStateChanged, type User as fbUser } from 'firebase/auth'
+import { getStorage } from "firebase/storage";
 import type { User } from '@/types/user'
 import { useRoute, useRouter } from 'vue-router'
 import { getFirestore } from 'firebase/firestore'
@@ -15,13 +16,14 @@ const isLoading = ref(true)
 const fbApp = initializeApp({
   apiKey: import.meta.env.VITE_API_KEY,
   authDomain: import.meta.env.VITE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_AROJECT_ID,
-  storageBucket: import.meta.env.VITE_ATORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_AESSAGING_SENDER_ID,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_APP_ID
 })
 const fbAuth = getAuth(fbApp)
 const fbDB = getFirestore()
+const fbStorage = getStorage()
 const userStore = useUserStore()
 
 const setTheme = () => {
@@ -53,6 +55,7 @@ onAuthStateChanged(fbAuth, async (user: fbUser | null) => {
 provide('fbApp', fbApp)
 provide('fbAuth', fbAuth)
 provide('fbDB', fbDB)
+provide('fbStorage', fbStorage)
 </script>
 
 <template>
