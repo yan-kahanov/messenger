@@ -21,15 +21,19 @@ watchEffect(() => {
   onSnapshot(doc(fbDB, 'chats', chatUid.value as string), (doc) => {
     if (doc.exists()) {
       messages.value = doc.data().messages
-      nextTick(() => {
-        containerEl.value.scrollTop = containerEl.value.scrollHeight
-      })
-    }else{
+      scrollToBottom()
+    } else {
       router.replace('/')
     }
     isLoading.value = false
   })
 })
+
+const scrollToBottom = () => {
+  nextTick(() => {
+    containerEl.value.scrollTop = containerEl.value.scrollHeight
+  })
+}
 </script>
 
 <template>
@@ -45,6 +49,7 @@ watchEffect(() => {
         v-for="(message, index) in messages"
         :key="index"
         :message="message"
+        :scroll-to-bottom="scrollToBottom"
       />
     </div>
   </div>

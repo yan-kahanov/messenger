@@ -8,6 +8,7 @@ import ImageModal from '@/components/ImageModal.vue'
 
 interface Props {
   message: Message
+  scrollToBottom: () => void
 }
 const props = defineProps<Props>()
 
@@ -53,9 +54,9 @@ const handleClick = () => {
       {{ message.text }}
     </div>
     <v-sheet v-if="message.image" color="white" class="active-chat-message__img">
-      <v-img :src="message?.image.url" ref="imageEl" width="150"></v-img>
+      <v-img :src="message?.image.url" ref="imageEl" width="150" @load="scrollToBottom"></v-img>
     </v-sheet>
-    <image-modal v-if="message.image" :src="message.image.url" activator="parent"/>
+    <image-modal v-if="message.image" :src="message.image.url" activator="parent" />
     <div v-if="message.file" class="d-flex align-center">
       <v-avatar class="active-chat-message__file-avatar">
         <v-icon icon="mdi-file" :color="isOwner ? 'primary' : 'surface'" />
