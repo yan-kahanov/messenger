@@ -64,17 +64,17 @@ const handleClick = () => {
     </v-sheet>
     <image-modal v-if="message.image" :src="message.image.url" activator="parent" />
     <div v-if="message.file" class="d-flex align-center">
-      <v-avatar class="active-chat-message__file-avatar">
-        <v-icon icon="mdi-file" :color="isOwner ? 'primary' : 'surface'" />
+      <v-avatar color="white">
+        <v-icon icon="mdi-file" :color="isOwner ? 'primary' : 'grey-darken-3'" />
       </v-avatar>
       <div class="ms-3">
         <div>{{ message.file.name }}</div>
-        <div class="text-disabled">
+        <div :style="{ opacity: '0.6' }">
           {{ formatBytes(message.file.size) }}
         </div>
       </div>
     </div>
-    <div class="text-caption text-disabled ms-2">
+    <div class="text-caption ms-2" :style="{ opacity: '0.6' }">
       {{ timestampToTime(message.date?.seconds) }}
     </div>
   </v-card>
@@ -95,11 +95,6 @@ const handleClick = () => {
   &.owner {
     margin-left: auto;
     border-radius: 15px 15px 0 15px;
-  }
-  &__file {
-    &-avatar {
-      background-color: rgba(var(--v-theme-on-background));
-    }
   }
 }
 </style>
