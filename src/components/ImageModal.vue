@@ -17,7 +17,9 @@ const imageSize = computed(() => ({
         <v-btn class="image-modal__close" icon @click="() => isOpened = false">
             <v-icon icon="mdi-close"/>
         </v-btn>
-      <v-img :src="src" ref="imageEl" :width="imageSize.width" :height="imageSize.height" />
+      <v-sheet color="white">
+        <v-img :src="src" ref="imageEl" :width="imageSize.width" :height="imageSize.height" max-height="80vh" max-width="80vw" />
+      </v-sheet>
     </div>
   </v-dialog>
 </template>
