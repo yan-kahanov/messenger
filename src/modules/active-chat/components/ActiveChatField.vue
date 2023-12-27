@@ -29,7 +29,7 @@ const fileInputEl = ref()
 const sendMessage = async (message: string) => {
   if (!user.value || !chatUid.value || !companionUid.value || !fbDB || !field.value) return
   field.value = ''
-  console.log(chatsStore.activeChat?.userInfo)
+  
   await updateDoc(doc(fbDB, 'chats', chatUid.value as string), {
     messages: arrayUnion({
       id: uuid(),
@@ -83,6 +83,9 @@ const saveFile = (e: Event) => {
             }
           })
         })
+
+        await updateUserChat(user.value?.uid || '', file.name)
+        await updateUserChat(companionUid.value as string, file.name)
       })
     }
   )
