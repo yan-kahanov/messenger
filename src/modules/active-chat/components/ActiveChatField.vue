@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, inject, computed } from 'vue'
 import { v4 as uuid } from 'uuid'
+import ActiveChatEmojis from './ActiveChatEmojis.vue'
 import {
   arrayUnion,
   doc,
@@ -29,7 +30,7 @@ const fileInputEl = ref()
 const sendMessage = async (message: string) => {
   if (!user.value || !chatUid.value || !companionUid.value || !fbDB || !field.value) return
   field.value = ''
-  
+
   await updateDoc(doc(fbDB, 'chats', chatUid.value as string), {
     messages: arrayUnion({
       id: uuid(),
@@ -62,7 +63,7 @@ const saveFile = (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0]
 
   if (!file || !fbDB) return
-  
+
   const fileType = file.type.split('/')[0] === 'image' ? 'image' : 'file'
   const storageRef = fbRef(fbStorage, uuid())
   const uploadTask = uploadBytesResumable(storageRef, file)
@@ -111,6 +112,7 @@ const saveFile = (e: Event) => {
       ></v-textarea>
       <v-btn icon variant="text" color="disabled">
         <v-icon icon="mdi-emoticon-happy-outline" size="30" />
+        <active-chat-emojis v-model:field="field" />
       </v-btn>
       <v-btn
         icon

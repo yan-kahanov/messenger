@@ -15,6 +15,12 @@ const props = defineProps<Props>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 const isOwner = computed(() => props.message.senderId === user.value?.uid)
+const emojiRegex = /\p{Extended_Pictographic}/gu
+const isSingleEmoji = computed(
+  () =>
+    props.message?.text?.match(/./gu)?.length === 1 &&
+    props.message?.text?.match(emojiRegex)?.length === 1
+)
 
 const timestampToTime = (timestamp: number) => {
   const date = new Date(timestamp * 1000)
@@ -50,7 +56,7 @@ const handleClick = () => {
     :class="{ owner: isOwner, clickable: message.file || message.image }"
     @click="handleClick"
   >
-    <div class="pb-1">
+    <div v-if="message.text" class="pb-1" :class="{ 'text-h3': isSingleEmoji }">
       {{ message.text }}
     </div>
     <v-sheet v-if="message.image" color="white" class="active-chat-message__img">
