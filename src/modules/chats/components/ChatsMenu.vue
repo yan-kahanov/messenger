@@ -1,12 +1,23 @@
 <script setup lang="ts">
+import { useTheme } from 'vuetify'
 import { useUserStore } from '@/stores/user'
 import { signOut } from 'firebase/auth'
 import { inject } from 'vue'
 import { storeToRefs } from 'pinia'
 
+const theme = useTheme()
 const fbAuth = inject<any>('fbAuth')
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+const toggleTheme = () => {
+  const isCurrentDark = theme.global.current.value.dark
+  const newTheme = isCurrentDark ? 'light' : 'dark'
+
+  theme.global.name.value = newTheme
+  localStorage.setItem('theme', newTheme)
+}
+
 </script>
 
 <template>
@@ -24,6 +35,12 @@ const { user } = storeToRefs(userStore)
       </div>
     </v-list-item>
     <v-divider />
+    <v-list-item class="py-3" @click="toggleTheme">
+      <v-list-item-title :style="{ userSelect: 'none' }">
+        <v-icon icon="mdi-brightness-6" class="me-3"></v-icon>
+        Сменить тему
+      </v-list-item-title>
+    </v-list-item>
     <v-btn class="sign-out-btn" @click="() => signOut(fbAuth)"> Выйти </v-btn>
   </v-navigation-drawer>
 </template>
