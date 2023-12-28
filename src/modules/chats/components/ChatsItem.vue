@@ -53,7 +53,7 @@ const clickUser = async () => {
         uid: currentUser.value?.uid,
         displayName: currentUser.value?.displayName,
         photoURL: currentUser.value?.photoURL,
-        color: props.user.color
+        color: currentUser.value?.color
       },
       [combinedId + '.date']: serverTimestamp()
     })
