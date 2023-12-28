@@ -15,6 +15,8 @@ const props = defineProps<Props>()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 const isOwner = computed(() => props.message.senderId === user.value?.uid)
+const isClickable = computed(() => props.message.file || props.message.image)
+const isTransparent = computed(() => isSingleEmoji.value || props.message.image)
 const emojiRegex = /\p{Extended_Pictographic}/gu
 const isSingleEmoji = computed(
   () =>
@@ -53,10 +55,15 @@ const handleClick = () => {
   <v-card
     class="active-chat-message mb-1 py-2 px-3"
     :color="isOwner ? 'primary' : 'default'"
-    :class="{ owner: isOwner, clickable: message.file || message.image }"
+    :class="{
+      owner: isOwner,
+      clickable: isClickable,
+      transparent: isTransparent
+    }"
+    flat
     @click="handleClick"
   >
-    <div v-if="message.text" class="pb-1" :class="{ 'text-h3': isSingleEmoji }">
+    <div v-if="message.text" class="pb-1" :class="{ 'text-h1': isSingleEmoji }">
       {{ message.text }}
     </div>
     <v-sheet v-if="message.image" color="white" class="active-chat-message__img">
@@ -74,9 +81,13 @@ const handleClick = () => {
         </div>
       </div>
     </div>
-    <div class="text-caption ms-2" :style="{ opacity: '0.6' }">
+    <v-chip
+      class="text-caption ms-2"
+      :variant="isTransparent ? 'flat' : 'text'"
+      :size="isTransparent ? 'small' : 'xs'"
+    >
       {{ timestampToTime(message.date?.seconds) }}
-    </div>
+    </v-chip>
   </v-card>
 </template>
 
@@ -88,6 +99,9 @@ const handleClick = () => {
   display: flex;
   align-items: flex-end;
   pointer-events: none;
+  &.transparent {
+    background-color: transparent !important;
+  }
   &.clickable {
     cursor: pointer;
     pointer-events: all;
