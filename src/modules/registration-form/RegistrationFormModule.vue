@@ -8,7 +8,9 @@ import {
 } from '@/helpers/validators'
 import VPasswordField from '@/components/VPasswordField.vue'
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from 'firebase/firestore'
+import getRandomNum from '@/helpers/getRandomNum'
+import { useUserStore } from '@/stores/user'
 
 interface Form {
   name: string
@@ -28,6 +30,8 @@ const fbAuth = inject<any>('fbAuth')
 const fbDB = inject<any>('fbDB')
 const isLoading = ref(false)
 const isEmailInUse = ref(false)
+const userStore = useUserStore()
+const colors = ['#F06292', '#BA68C8', '#42A5F5', '#66BB6A', '#FF7043']
 
 const submit = async () => {
   if (!formEl.value) return
@@ -36,24 +40,28 @@ const submit = async () => {
 
   if (valid && !isEmailInUse.value) {
     const { email, password, name } = form
+    const color = colors[getRandomNum(colors.length - 1)]
 
     isLoading.value = true
     createUserWithEmailAndPassword(fbAuth, email, password)
       .then(async (res) => {
+        const newUser = {
+          uid: res.user.uid,
+          displayName: name,
+          email,
+          photoURL: null,
+          color
+        }
         formEl.value.reset()
         // update profile
         await updateProfile(res.user, {
           displayName: name
         })
         // create user on firestore
-        await setDoc(doc(fbDB, 'users', res.user.uid), {
-          uid: res.user.uid,
-          displayName: name,
-          email,
-          photoURL: null
-        })
+        await setDoc(doc(fbDB, 'users', res.user.uid), newUser)
+        userStore.setUser(newUser)
         //create empty user chats on firestore
-        await setDoc(doc(fbDB, "userChats", res.user.uid), {});
+        await setDoc(doc(fbDB, 'userChats', res.user.uid), {})
       })
       .catch((error) => {
         if (error.code === 'auth/email-already-in-use') {

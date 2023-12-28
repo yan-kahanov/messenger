@@ -27,7 +27,7 @@ const toBack = () => {
         <v-icon icon="mdi-arrow-left" size="26" />
       </v-btn>
       <div>
-        <v-avatar size="46" color="surface-variant">
+        <v-avatar size="46" :color="user?.color">
           <v-img
             v-if="user?.photoURL"
             :src="user?.photoURL"

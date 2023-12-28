@@ -16,12 +16,13 @@ const { user } = storeToRefs(userStore)
 const fbDB = inject<Firestore>('fbDB')
 const isMenuOpened = ref<boolean>(false)
 const search = ref('')
-const isSearching = ref(true)
+const isSearching = ref(false)
 const chats = ref<Chat[]>([])
 const users = ref([])
 
 onMounted(() => {
   if (fbDB && user.value?.uid) {
+    isSearching.value = true
     onSnapshot(doc(fbDB, 'userChats', user.value?.uid as string), (doc) => {
       const newChats: Chat[] = []
       const res = doc.data()
@@ -68,10 +69,20 @@ onMounted(() => {
       Список пуст
     </div>
     <div v-else-if="search?.length">
-      <chats-item v-for="(user, index) in users" :key="index" :user="user" v-model:search="search"/>
+      <chats-item
+        v-for="(user, index) in users"
+        :key="index"
+        :user="user"
+        v-model:search="search"
+      />
     </div>
     <div v-else>
-      <chats-item v-for="(chat, index) in chats" :key="index" :chat="chat" v-model:search="search"/>
+      <chats-item
+        v-for="(chat, index) in chats"
+        :key="index"
+        :chat="chat"
+        v-model:search="search"
+      />
     </div>
   </v-list>
 </template>

@@ -3,11 +3,12 @@ import { useTheme } from 'vuetify'
 import { onMounted, provide, ref } from 'vue'
 import { initializeApp } from 'firebase/app'
 import { getAuth, onAuthStateChanged, type User as fbUser } from 'firebase/auth'
-import { getStorage } from "firebase/storage";
+import { getStorage } from 'firebase/storage'
 import type { User } from '@/types/user'
 import { useRoute, useRouter } from 'vue-router'
 import { getFirestore } from 'firebase/firestore'
 import { useUserStore } from '@/stores/user'
+import { collection, query, where, getDocs } from 'firebase/firestore'
 
 const theme = useTheme()
 const router = useRouter()
@@ -41,12 +42,17 @@ onMounted(() => {
 onAuthStateChanged(fbAuth, async (user: fbUser | null) => {
   await router.isReady()
   const isAuthPage = route.name === 'login' || route.name === 'registration'
-  userStore.setUser(user as User)
 
-  if (user && isAuthPage) {
-    router.replace('/')
-  } else if (!user && !isAuthPage) {
-    router.replace('/login')
+  if (user) {
+    const q = query(collection(fbDB, 'users'), where('uid', '==', user?.uid))
+    const querySnapshot = await getDocs(q)
+    querySnapshot.forEach((doc) => {
+      userStore.setUser(doc.data() as User)
+    })
+    if(isAuthPage) router.replace('/')
+  }else{
+    userStore.setUser(null)
+    if(!isAuthPage) router.replace('/login')
   }
 
   isLoading.value = false

@@ -8,6 +8,7 @@ export interface Chat {
     displayName: string
     photoURL: string | null
     uid: string
+    color: string
   }
   lastMessage?: { text: string, senderId: string }
 }

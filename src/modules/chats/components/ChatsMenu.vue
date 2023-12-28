@@ -24,7 +24,7 @@ const toggleTheme = () => {
   <v-navigation-drawer temporary>
     <v-list-item>
       <div class="d-flex align-center py-4">
-        <v-avatar size="50" color="surface-variant">
+        <v-avatar size="50" :color="user?.color">
           <v-img v-if="user?.photoURL" :src="user?.photoURL" cover></v-img>
           <div v-else class="text-h5">{{ user?.displayName?.slice(0, 1) }}</div>
         </v-avatar>
