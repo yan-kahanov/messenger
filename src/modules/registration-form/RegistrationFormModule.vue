@@ -31,7 +31,17 @@ const fbDB = inject<any>('fbDB')
 const isLoading = ref(false)
 const isEmailInUse = ref(false)
 const userStore = useUserStore()
-const colors = ['#F06292', '#BA68C8', '#42A5F5', '#66BB6A', '#FF7043']
+const colors = [
+  '#F06292',
+  '#BA68C8',
+  '#42A5F5',
+  '#66BB6A',
+  '#FF7043',
+  '#651FFF',
+  '#536DFE',
+  '#00B8D4',
+  '#00BFA5'
+]
 
 const submit = async () => {
   if (!formEl.value) return
