@@ -9,6 +9,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { getFirestore } from 'firebase/firestore'
 import { useUserStore } from '@/stores/user'
 import { collection, query, where, getDocs } from 'firebase/firestore'
+import { useLanguageStore } from './stores/language'
 
 const theme = useTheme()
 const router = useRouter()
@@ -26,6 +27,7 @@ const fbAuth = getAuth(fbApp)
 const fbDB = getFirestore()
 const fbStorage = getStorage()
 const userStore = useUserStore()
+const langStore = useLanguageStore()
 
 const setTheme = () => {
   const isSystemThemeDark =
@@ -37,6 +39,7 @@ const setTheme = () => {
 
 onMounted(() => {
   setTheme()
+  langStore.defineLang()
 })
 
 onAuthStateChanged(fbAuth, async (user: fbUser | null) => {

@@ -4,9 +4,13 @@ import ActiveChatHeader from './components/ActiveChatHeader.vue'
 import ActiveChatMessages from './components/ActiveChatMessages.vue'
 import ActiveChatField from './components/ActiveChatField.vue'
 import { computed } from 'vue'
+import { useLanguageStore } from '@/stores/language'
+import dictionary from './dictionary.json'
 
 const route = useRoute()
 const activeChatId = computed(() => route.query.chat)
+const langStore = useLanguageStore()
+const lang = computed(() => langStore.lang)
 </script>
 
 <template>
@@ -17,7 +21,7 @@ const activeChatId = computed(() => route.query.chat)
       <active-chat-field />
     </div>
     <div v-else class="d-flex justify-center align-center h-100">
-      <v-chip>Выберите, кому хотели бы написать</v-chip>
+      <v-chip>{{ dictionary.select_chat[lang] }}</v-chip>
     </div>
   </div>
 </template>

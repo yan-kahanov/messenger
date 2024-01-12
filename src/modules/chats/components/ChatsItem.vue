@@ -7,6 +7,8 @@ import { setDoc, doc, updateDoc, serverTimestamp, getDoc, type Firestore } from 
 import type { User } from '@/types/user'
 import type { Chat } from '@/types/chat'
 import { useChatsStore } from '@/stores/chats'
+import { useLanguageStore } from '@/stores/language'
+import dictionary from '../dictionary.json'
 
 interface Props {
   user?: User
@@ -25,6 +27,8 @@ const { user: currentUser } = storeToRefs(userStore)
 const fbDB = inject<Firestore>('fbDB')
 const item = computed(() => props.user || props.chat?.userInfo)
 const isLoading = ref<boolean>(false)
+const langStore = useLanguageStore()
+const lang = computed(() => langStore.lang)
 
 const clickUser = async () => {
   if (!props.user || !fbDB || isLoading.value) return
@@ -96,7 +100,7 @@ watch(
   >
     <div class="d-flex gap-2">
       <v-avatar size="50" :color="item?.color">
-        <v-progress-circular v-if="isLoading" indeterminate size="small" width="2"/>
+        <v-progress-circular v-if="isLoading" indeterminate size="small" width="2" />
         <v-img v-else-if="item?.photoURL" :src="item.photoURL" cover></v-img>
         <div v-else class="text-h5">{{ item?.displayName?.slice(0, 1) }}</div>
       </v-avatar>
@@ -106,7 +110,7 @@ watch(
         <div v-else-if="chat?.lastMessage" class="chats__item-msg text-disabled">
           {{ chat.lastMessage.text }}
         </div>
-        <div v-else class="text-disabled">Нет сообщений</div>
+        <div v-else class="text-disabled">{{ dictionary.no_messages[lang] }}</div>
       </div>
     </div>
   </v-list-item>

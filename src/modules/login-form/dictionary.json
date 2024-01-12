@@ -1,0 +1,26 @@
+{
+    "title": {
+        "en": "Authorization",
+        "ru": "Авторизация"
+    },
+    "password": {
+        "en": "Password",
+        "ru": "Пароль"
+    },
+    "login": {
+        "en": "Login",
+        "ru": "Войти"
+    },
+    "sign_up": {
+        "en": "Sign up",
+        "ru": "Создать аккаунт"
+    },
+    "rememeber_me": {
+        "en": "Remember me",
+        "ru": "Запомнить меня"
+    },
+    "invalid_data": {
+        "en": "Invalid email or password",
+        "ru": "Неверный email или пароль"
+    }
+}

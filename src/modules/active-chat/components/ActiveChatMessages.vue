@@ -6,6 +6,8 @@ import { doc, onSnapshot, type Firestore } from 'firebase/firestore'
 import { type Message } from '@/types/message'
 import { nextTick } from 'vue'
 import { useTheme } from 'vuetify'
+import { useLanguageStore } from '@/stores/language'
+import dictionary from '../dictionary.json'
 
 const messages = ref<Message[]>([])
 const isLoading = ref(true)
@@ -16,6 +18,8 @@ const chatUid = computed(() => route.query.chat)
 const innerEl = ref()
 const theme = useTheme()
 const isDarkTheme = computed(() => theme.global.name.value === 'dark')
+const langStore = useLanguageStore()
+const lang = computed(() => langStore.lang)
 
 watchEffect(() => {
   if (!fbDB || !chatUid.value) return
@@ -46,7 +50,7 @@ const scrollToBottom = () => {
         <v-progress-circular indeterminate color="primary" />
       </div>
       <div v-else-if="!messages?.length" class="d-flex justify-center align-center h-100">
-        <v-chip variant="elevated">Нет сообщений</v-chip>
+        <v-chip variant="elevated">{{ dictionary.no_messages[lang] }}</v-chip>
       </div>
       <div v-else>
         <active-chat-messages-item

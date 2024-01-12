@@ -1,0 +1,14 @@
+{
+    "select_chat": {
+        "en": "Select who you would like to write to",
+        "ru": "Выберите, кому хотели бы написать"
+    },
+    "no_messages": {
+        "en": "No messages",
+        "ru": "Нет сообщений"
+    },
+    "write_message": {
+        "en": "To write a message...",
+        "ru": "Написать сообщение..."
+    }
+}

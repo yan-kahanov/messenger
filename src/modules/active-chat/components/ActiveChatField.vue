@@ -15,6 +15,8 @@ import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import { useChatsStore } from '@/stores/chats'
+import { useLanguageStore } from '@/stores/language'
+import dictionary from '../dictionary.json'
 
 const fbDB = inject<Firestore>('fbDB')
 const fbStorage = inject<any>('fbStorage')
@@ -26,6 +28,8 @@ const route = useRoute()
 const chatUid = computed(() => route.query.chat)
 const companionUid = computed(() => chatsStore.activeChat?.userInfo.uid)
 const fileInputEl = ref()
+const langStore = useLanguageStore()
+const lang = computed(() => langStore.lang)
 
 const sendMessage = async (message: string) => {
   if (!user.value || !chatUid.value || !companionUid.value || !fbDB || !field.value) return
@@ -104,7 +108,7 @@ const saveFile = (e: Event) => {
         v-model="field"
         rows="1"
         variant="solo"
-        placeholder="Написать сообщение..."
+        :placeholder="dictionary.write_message[lang]"
         flat
         hide-details
         no-resize

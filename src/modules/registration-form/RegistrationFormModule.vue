@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { ref, reactive, inject } from 'vue'
+import { ref, reactive, inject, computed } from 'vue'
 import {
   emailValidator,
   requiredValidator,
   minLengthValidator,
   confirmedValidator
 } from '@/helpers/validators'
-import VPasswordField from '@/components/VPasswordField.vue'
+import VPasswordField from '@/components/v-password-field/index.vue'
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { doc, setDoc } from 'firebase/firestore'
 import getRandomNum from '@/helpers/getRandomNum'
 import { useUserStore } from '@/stores/user'
+import { useLanguageStore } from '@/stores/language'
+import dictionary from './dictionary.json'
 
 interface Form {
   name: string
@@ -31,6 +33,8 @@ const fbDB = inject<any>('fbDB')
 const isLoading = ref(false)
 const isEmailInUse = ref(false)
 const userStore = useUserStore()
+const langStore = useLanguageStore()
+const lang = computed(() => langStore.lang)
 const colors = [
   '#F06292',
   '#BA68C8',
@@ -86,22 +90,20 @@ const submit = async () => {
 <template>
   <v-card :style="{ width: '375px' }">
     <v-form class="pa-6" @submit.prevent="submit" ref="formEl" :disabled="isLoading">
-      <p class="text-h4 text-center mb-4">Регистрация</p>
+      <p class="text-h4 text-center mb-4">{{ dictionary.title[lang] }}</p>
       <v-text-field
         v-model="form.name"
         variant="outlined"
-        label="Имя"
+        :label="dictionary.name[lang]"
         :rules="[requiredValidator]"
-        :error-messages="isEmailInUse ? ['Email уже используется'] : []"
-        @update:model-value="() => (isEmailInUse = false)"
       />
       <v-text-field
         v-model="form.email"
         class="mt-2"
         variant="outlined"
-        label="Email"
+        :label="dictionary.email[lang]"
         :rules="[emailValidator, requiredValidator]"
-        :error-messages="isEmailInUse ? ['Email уже используется'] : []"
+        :error-messages="isEmailInUse ? [dictionary.email_is_already_in_use[lang]] : []"
         @update:model-value="() => (isEmailInUse = false)"
       >
       </v-text-field>
@@ -109,14 +111,14 @@ const submit = async () => {
         v-model="form.password"
         class="mt-2"
         variant="outlined"
-        label="Пароль"
+        :label="dictionary.password[lang]"
         :rules="[requiredValidator, (e: string) => minLengthValidator(e, 6)]"
       />
       <v-password-field
         v-model="form.repeatPassword"
         class="mt-2"
         variant="outlined"
-        label="Повторите пароль"
+        :label="dictionary.repassword[lang]"
         :rules="[
           requiredValidator,
           (e: string) => minLengthValidator(e, 6),
@@ -124,14 +126,16 @@ const submit = async () => {
         ]"
       >
       </v-password-field>
-      <v-btn class="mt-3" color="primary" block type="submit" :loading="isLoading">Создать</v-btn>
+      <v-btn class="mt-3" color="primary" block type="submit" :loading="isLoading">{{
+        dictionary.create[lang]
+      }}</v-btn>
       <v-btn
         class="text-lowercase"
         variant="text"
         block
         :disabled="isLoading"
         @click="() => $router.push('/login')"
-        >уже есть аккаунт</v-btn
+        >{{ dictionary.already_have_an_account[lang] }}</v-btn
       >
     </v-form>
   </v-card>

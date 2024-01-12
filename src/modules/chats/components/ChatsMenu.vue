@@ -2,13 +2,17 @@
 import { useTheme } from 'vuetify'
 import { useUserStore } from '@/stores/user'
 import { signOut } from 'firebase/auth'
-import { inject } from 'vue'
+import { inject, computed } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useLanguageStore } from '@/stores/language'
+import dictionary from '../dictionary.json'
 
 const theme = useTheme()
 const fbAuth = inject<any>('fbAuth')
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const langStore = useLanguageStore()
+const lang = computed(() => langStore.lang)
 
 const toggleTheme = () => {
   const isCurrentDark = theme.global.current.value.dark
@@ -18,6 +22,10 @@ const toggleTheme = () => {
   localStorage.setItem('theme', newTheme)
 }
 
+const items = computed(() => [
+  { title: 'change_theme', icon: 'brightness-6', func: toggleTheme },
+  { title: 'change_language', icon: 'translate', func: langStore.toggleLang }
+])
 </script>
 
 <template>
@@ -35,13 +43,13 @@ const toggleTheme = () => {
       </div>
     </v-list-item>
     <v-divider />
-    <v-list-item class="py-3" @click="toggleTheme">
+    <v-list-item v-for="(item, index) in items" :key="index" class="py-3" @click="item.func">
       <v-list-item-title :style="{ userSelect: 'none' }">
-        <v-icon icon="mdi-brightness-6" class="me-3"></v-icon>
-        Сменить тему
+        <v-icon :icon="`mdi-${item.icon}`" class="me-3"></v-icon>
+        {{ dictionary[item.title as keyof typeof dictionary][lang] }}
       </v-list-item-title>
     </v-list-item>
-    <v-btn class="sign-out-btn" @click="() => signOut(fbAuth)"> Выйти </v-btn>
+    <v-btn class="sign-out-btn" @click="() => signOut(fbAuth)"> {{ dictionary.exit[lang] }} </v-btn>
   </v-navigation-drawer>
 </template>
 

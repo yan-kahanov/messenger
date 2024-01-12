@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useLanguageStore } from '@/stores/language';
+import { ref, computed } from 'vue'
+import dictionary from './dictionary.json'
+
 const isPasswordVisible = ref<boolean>(false)
+const langStore = useLanguageStore()
+const lang = computed(() => langStore.lang)
 </script>
 
 <template>
@@ -12,10 +17,10 @@ const isPasswordVisible = ref<boolean>(false)
         size="small"
         @click="() => (isPasswordVisible = !isPasswordVisible)"
       >
-        <v-icon icon="mdi-eye" size="24" />
+        <v-icon :icon="isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'" size="24" />
         <v-tooltip
           activator="parent"
-          :text="isPasswordVisible ? 'Скрыть пароль' : 'Показать пароль'"
+          :text="isPasswordVisible ? dictionary.hide[lang] : dictionary.show[lang]"
         />
       </v-btn>
     </template>

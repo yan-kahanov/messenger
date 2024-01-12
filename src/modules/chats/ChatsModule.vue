@@ -8,6 +8,8 @@ import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { doc, onSnapshot, type Firestore } from 'firebase/firestore'
 import type { Chat } from '@/types/chat'
+import { useLanguageStore } from '@/stores/language'
+import dictionary from './dictionary.json'
 
 const route = useRoute()
 const activeChatId = computed(() => route.query.chat)
@@ -19,6 +21,8 @@ const search = ref('')
 const isSearching = ref(false)
 const chats = ref<Chat[]>([])
 const users = ref([])
+const langStore = useLanguageStore()
+const lang = computed(() => langStore.lang)
 
 onMounted(() => {
   if (fbDB && user.value?.uid) {
@@ -66,7 +70,7 @@ onMounted(() => {
       v-else-if="(!chats.length && !search?.length) || (!users.length && search?.length)"
       class="text-center pt-5"
     >
-      Список пуст
+      {{ dictionary.empty_list[lang] }}
     </div>
     <div v-else-if="search?.length">
       <chats-item

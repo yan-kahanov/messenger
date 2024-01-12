@@ -1,0 +1,26 @@
+{
+    "empty_list": {
+        "en": "The list is empty",
+        "ru": "Список пуст"
+    },
+    "no_messages": {
+        "en": "No messages",
+        "ru": "Нет сообщений"
+    },
+    "search_placeholder": {
+        "en": "Enter your exact name or email",
+        "ru": "Введите точно имя или email"
+    },
+    "change_theme": {
+        "en": "Change theme",
+        "ru": "Изменить тему"
+    },
+    "change_language": {
+        "en": "Русский язык",
+        "ru": "English language"
+    },
+    "exit": {
+        "en": "exit",
+        "ru": "выйти"
+    }
+}

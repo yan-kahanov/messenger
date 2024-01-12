@@ -1,0 +1,10 @@
+{
+    "hide": {
+        "en": "Hide password",
+        "ru": "Скрыть пароль"
+    },
+    "show": {
+        "en": "Show password",
+        "ru": "Показать пароль"
+    }
+}
