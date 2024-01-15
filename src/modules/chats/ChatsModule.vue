@@ -93,7 +93,7 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .chats {
-  transition: all 0.3s;
+  transition: all 0.15s;
   width: 420px;
   height: 100%;
   flex-shrink: 0;

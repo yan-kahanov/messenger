@@ -30,7 +30,7 @@ const lang = computed(() => langStore.lang)
 .active-chat {
   overflow: hidden;
   width: 100%;
-  transition: all 0.3s;
+  transition: all 0.15s;
   @media screen and (max-width: 700px) {
     width: 0;
   }

@@ -82,7 +82,8 @@ const handleClick = () => {
       </div>
     </div>
     <v-chip
-      class="text-caption ms-2"
+      class="active-chat-message__time text-caption ms-2"
+      :class="{ absolute: isSingleEmoji || message.image }"
       :variant="isTransparent ? 'flat' : 'text'"
       :size="isTransparent ? 'small' : 'xs'"
     >
@@ -93,8 +94,9 @@ const handleClick = () => {
 
 <style lang="scss" scoped>
 .active-chat-message {
+  position: relative;
   width: max-content;
-  max-width: 50%;
+  max-width: 100%;
   border-radius: 15px 15px 15px 0;
   display: flex;
   align-items: flex-end;
@@ -109,6 +111,14 @@ const handleClick = () => {
   &.owner {
     margin-left: auto;
     border-radius: 15px 15px 0 15px;
+  }
+  &__time {
+    flex-shrink: 0;
+    &.absolute {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
   }
 }
 </style>
