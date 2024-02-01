@@ -71,7 +71,7 @@ const scrollToBottom = () => {
     background-color: #a5d6a7;
     overflow-y: auto;
     min-height: 100px;
-    height: calc(100vh - 121.2px);
+    height: calc(100lvh - 121.2px);
     background-image: url('@/modules/active-chat/assets/chat-background.svg');
     background-repeat: repeat;
     background-attachment: fixed;
