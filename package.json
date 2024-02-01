@@ -1,6 +1,7 @@
 {
-  "name": "chat",
-  "version": "0.0.0",
+  "name": "messenger",
+  "homepage": "https://yan-kahanov.github.io/messenger/",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "serve": "vite preview",
@@ -11,7 +12,9 @@
     "dev": "vite",
     "format": "prettier --write src/",
     "preview": "vite preview",
-    "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false"
+    "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@mdi/font": "5.9.55",
@@ -38,6 +41,7 @@
     "@vue/tsconfig": "^0.4.0",
     "eslint": "^8.49.0",
     "eslint-plugin-vue": "^9.17.0",
+    "gh-pages": "^6.1.1",
     "jsdom": "^22.1.0",
     "npm-run-all2": "^6.1.1",
     "prettier": "^3.0.3",
@@ -47,5 +51,8 @@
     "vitest": "^0.34.6",
     "vue-cli-plugin-vuetify": "~2.5.8",
     "vue-tsc": "^1.8.19"
+  },
+  "vue": {
+    "publicPath": "/messenger/"
   }
 }
